@@ -11,7 +11,7 @@ def clientchat():
         if message=="arret":
             break
         data = client_socket.recv(1024).decode()
-        if data == "bye":
+        if data == "bye" or not data:
             break
         print('Reçu du serveur : ' + data)
         message = input(" Répondre :  ")

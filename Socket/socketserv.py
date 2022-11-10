@@ -19,6 +19,8 @@ def server_program():
             break
         print("Reçu d'un utilisateur connecté : "+str(data))
         data = input(' Répondre :  ')
+        if data =="arret":
+            break
         conn.send(data.encode())
     server_socket.close()
 
