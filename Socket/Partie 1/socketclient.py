@@ -1,21 +1,20 @@
 import socket
-
+host = '127.0.0.1'
+port = 6824
 def clientchat():
-    host = '127.0.0.1'
-    port = 6824
-    client_socket = socket.socket()
-    client_socket.connect((host, port))
+    client= socket.socket()
+    client.connect((host, port))
     message = input(" Entrez un message :  ")
     while message.lower().strip() != 'bye':
-        client_socket.send(message.encode())
+        client.send(message.encode())
         if message=="arret":
             break
-        data = client_socket.recv(1024).decode()
+        data = client.recv(1024).decode()
         if data == "bye" or not data:
             break
         print('Reçu du serveur : ' + data)
         message = input(" Répondre :  ")
-    client_socket.close()
+    client.close()
 
 
 if __name__ == '__main__':
