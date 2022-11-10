@@ -12,13 +12,15 @@ def server_program():
     while True:
         data = conn.recv(1024).decode()
         if not data:
+            server_socket.close()
+            print('Utilisateur deconnecté, retour à l\'écoute')
+            server_program()
+        elif data =="arret":
             break
         print("Reçu d'un utilisateur connecté : "+str(data))
         data = input(' Répondre :  ')
         conn.send(data.encode())
     server_socket.close()
-    print('Utilisateur deconnecté, retour à l\'écoute')
-    server_program()
 
 if __name__ == '__main__':
     server_program()
