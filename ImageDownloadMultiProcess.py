@@ -12,7 +12,6 @@ def download_image(img_url):
         img_file.write(img_bytes)
         print(f"{img_name} was downloaded")
 
-
 if __name__ == '__main__':
     start = time.perf_counter()
     p1 = multiprocessing.Process(target=download_image(img_urls[0]))

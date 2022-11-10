@@ -14,8 +14,8 @@ def download_image(img_url):
     with open(img_name, 'wb') as img_file:
         img_file.write(img_bytes)
         print(f"{img_name} was downloaded")
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     start = time.perf_counter()
     t1 = threading.Thread(target=download_image, args=[img_urls[0]])
     t2 = threading.Thread(target=download_image, args=[img_urls[1]])
