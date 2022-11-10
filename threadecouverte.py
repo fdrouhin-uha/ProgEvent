@@ -1,13 +1,12 @@
 import threading
 import time
 
+def task(i):
+    print(f"Task {i} starts")
+    time.sleep(1)
+    print(f"Task {i} ends")
 
 if __name__ == '__main__':
-    def task(i):
-        print(f"Task {i} starts")
-        time.sleep(1)
-        print(f"Task {i} ends")
-
     start = time.perf_counter()
     t1 = threading.Thread(target=task, args=[1])
     t2 = threading.Thread(target=task, args=[2])
