@@ -1,7 +1,9 @@
 import requests
 import time
 import multiprocessing
-
+img_urls = ['https://cdn.pixabay.com/photo/2015/08/10/12/02/avocados-882635_960_720.jpg',
+            'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg',
+            'https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_960_720.jpg']
 
 def download_image(img_url):
     img_bytes = requests.get(img_url).content
@@ -12,8 +14,6 @@ def download_image(img_url):
 
 
 if __name__ == '__main__':
-    img_urls = ['https://cdn.pixabay.com/photo/2015/08/10/12/02/avocados-882635_960_720.jpg','https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg', 'https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_960_720.jpg']
-
     start = time.perf_counter()
     p1 = multiprocessing.Process(target=download_image(img_urls[0]))
     p2 = multiprocessing.Process(target=download_image(img_urls[1]))
