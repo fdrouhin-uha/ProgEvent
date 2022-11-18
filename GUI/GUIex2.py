@@ -42,39 +42,36 @@ class MainWindow(QMainWindow):
 
     def combobox(self):
         if self.__select.currentText() == 'K -> C':
-            self.__lab3.setText('° K')
+            self.__lab3.setText('K')
             self.__lab4.setText('° C')
         else:
             self.__lab3.setText('° C')
-            self.__lab4.setText('° K')
+            self.__lab4.setText('K')
 
     def convert(self):
-        if self.__select.currentText() == 'K -> C':
-            x = float(self.__text.text()) - 273.15
-            self.__result.setText(str(x))
-        else:
-            x = float(self.__text.text()) + 273.15
-            self.__result.setText(str(x))
+        try:
+            if self.__select.currentText() == 'K -> C':
+                x = float(self.__text.text()) - 273.15
+                self.__result.setText(str(x))
+            else:
+                x = float(self.__text.text()) + 273.15
+                self.__result.setText(str(x))
+        except ValueError:
+            msg2 = QMessageBox()
+            msg2.setWindowTitle('Erreur')
+            msg2.setText('Entrer un nombre !')
+            msg2.exec_()
+
+
 
     def popup(self):
-        dlg = CustomDialog()
-        dlg.exec()
+        msg = QMessageBox()
+        msg.setWindowTitle('Aide')
+        msg.setText('Permet de convertir un nombre soit de Kelvin vers Celsius, soit de Celsius vers Kelvin.')
+        msg.exec_()
 
     def actionQuitter(self):
         QCoreApplication.exit(0)
-
-class CustomDialog(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Aide")
-        QBtn = QDialogButtonBox.Ok
-        self.buttonBox = QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.layout = QVBoxLayout()
-        message = QLabel("Permet de convertir un nombre soit de Kelvin vers Celsius, soit de Celsius vers Kelvin.")
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
