@@ -8,11 +8,11 @@ client.connect((host, port))
 def listen():
     while True:
         data = client.recv(1024).decode()
-        print(' Reçu : ' + data)
         if not data:
             break
         elif data == 'bye':
             break
+        print(' Reçu : ' + data)
     client.close()
 
 def write():

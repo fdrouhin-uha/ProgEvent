@@ -11,11 +11,11 @@ conn, address = server.accept()
 def listen():
     while True:
         data = conn.recv(1024).decode()
-        print(' Reçu : ' + data)
         if not data:
             break
         elif data == 'bye':
             break
+        print(' Reçu : ' + data)
     conn.close()
     print('Déconnexion')
 
