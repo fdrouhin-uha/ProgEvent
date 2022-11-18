@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         except ValueError:
             msg2 = QMessageBox()
             msg2.setWindowTitle('Erreur')
-            msg2.setText('Entrer un nombre !')
+            msg2.setText('Entrez un nombre !')
             msg2.exec_()
 
 
