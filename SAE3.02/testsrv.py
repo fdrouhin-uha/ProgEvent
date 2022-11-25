@@ -5,7 +5,7 @@ host = '127.0.0.1'
 port = 6824
 server = socket.socket()
 server.bind((host, port))
-server.listen(2) # Nombre de clients max qui seront connectés
+server.listen(2)
 conn, address = server.accept()
 
 def listen():
@@ -14,7 +14,9 @@ def listen():
         if not data:
             break
         elif data == 'disconnect':
-            break
+            conn.close()
+            print('Client déconnecté')
+            connexion()
         elif data == 'askOS':
             data = 'cmd ok'
             conn.send(data.encode())
@@ -32,7 +34,15 @@ def listen():
             conn.send(data.encode())
         print(' Reçu : ' + data)
     conn.close()
-    print('Déconnexion')
+
+def connexion():
+    t1 = threading.Thread(target=listen)
+    t2 = threading.Thread(target=write)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+    conn.close()
 
 def write():
     while True:
@@ -42,10 +52,4 @@ def write():
         conn.send(data.encode())
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=listen)
-    t2 = threading.Thread(target=write)
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
-    conn.close()
+    connexion()
