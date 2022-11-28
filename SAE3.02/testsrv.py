@@ -1,12 +1,14 @@
 import socket
-
+import subprocess
 host = '127.0.0.1'
 port = 6824
-server = socket.socket()
-server.bind((host, port))
-server.listen(2)
 
-def server_program():
+
+def socketsrv():
+    server = socket.socket()
+    server.bind((host, port))
+    print("Serveur opérationnel")
+    server.listen(2)
     conn, address = server.accept()
     print("Connection depuis : "+str(address))
     while True:
@@ -23,9 +25,17 @@ def server_program():
             break
         elif data =='reset':
             server.close()
-            server_program()
+            print('Redémarrage du serveur, veuillez patienter ...')
+            socketsrv()
+        elif data =="connInfo":
+            info = ' Machine : ' + socket.gethostname() + ' | IP : ' + socket.gethostbyname(socket.gethostname())
+            conn.send(info.encode())
+        elif data == 'askOS':
+            p = subprocess.getoutput('systeminfo | findstr /B /C:"Nom du système d’exploitation:"')
+            print(p)
+            conn.send(p.encode())
         print("Reçu d'un utilisateur connecté : "+str(data))
     server.close()
 
 if __name__ == '__main__':
-    server_program()
+    socketsrv()

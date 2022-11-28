@@ -10,11 +10,7 @@ def listen():
         data = client.recv(1024).decode()
         if not data:
             break
-        elif data == 'bye':
-            break
-        print(' Reçu : ' + data)
     client.close()
-
 
 if __name__ == '__main__':
     t1 = threading.Thread(target=listen)
