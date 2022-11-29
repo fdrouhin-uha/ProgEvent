@@ -29,7 +29,7 @@ def socketsrv():
             print('Redémarrage du serveur, veuillez patienter ...')
             socketsrv()
         elif data =="connInfo":
-            info = ' Machine : ' + socket.gethostname() + ' | IP : ' + socket.gethostbyname(socket.gethostname())
+            info = 'Machine : ' + socket.gethostname() + ' | IP : ' + socket.gethostbyname(socket.gethostname())
             conn.send(info.encode())
         elif data == 'askOS':
             p = subprocess.getoutput('systeminfo | findstr /B /C:"Nom du système d’exploitation:"')
