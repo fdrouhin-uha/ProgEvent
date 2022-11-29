@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         ok.clicked.connect(self.convert)
         self.__select.activated.connect(self.combobox)
         help.clicked.connect(self.popup)
-        self.setWindowTitle("Température")
+        self.setWindowTitle("Monitoring")
 
     def combobox(self):
         if self.__select.currentText() == 'K -> C':

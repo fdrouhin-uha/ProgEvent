@@ -16,14 +16,17 @@ def listen():
 if __name__ == '__main__':
     t1 = threading.Thread(target=listen)
     t1.start()
-    data=''
     try:
-        while data!='disconnect':
+        while True:
             data = input()
             client.send(data.encode())
+            if data=='disconnect':
+                data = ''
+                break
+        client.close()
+        t1.join()
     except OSError:
         print('Le socket n\'est pas connecté !')
         co = str(input('Pour vous reconnecter tapper "yes" : '))
         if co == "yes":
             client.connect((host, port))
-    t1.join()

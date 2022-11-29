@@ -5,7 +5,7 @@ host = '127.0.0.1'
 port = 6824
 server = socket.socket()
 server.bind((host, port))
-server.listen(2) # Nombre de clients max qui seront connectés
+server.listen(2)
 conn, address = server.accept()
 
 def listen():
@@ -13,24 +13,22 @@ def listen():
         data = conn.recv(1024).decode()
         print(' Reçu : ' + data)
         if not data:
+            conn.close()
             break
         elif data == 'bye':
+            conn.close()
             break
-    conn.close()
-    print('Déconnexion')
-
-def write():
-    while True:
-        data = input()
-        if data == "arret":
+        elif data == 'arret':
             server.close()
-        conn.send(data.encode())
+            break
+    print('Déconnexion')
 
 if __name__ == '__main__':
     t1 = threading.Thread(target=listen)
-    t2 = threading.Thread(target=write)
     t1.start()
-    t2.start()
+    while True:
+        data = input()
+        if data == "arret":
+            break
+        conn.send(data.encode())
     t1.join()
-    t2.join()
-    conn.close()

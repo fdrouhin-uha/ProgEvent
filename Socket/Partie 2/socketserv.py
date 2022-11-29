@@ -8,6 +8,7 @@ server.bind((host, port))
 server.listen(2) # Nombre de clients max qui seront connectés
 conn, address = server.accept()
 
+
 def listen():
     while True:
         data = conn.recv(1024).decode()
@@ -19,18 +20,16 @@ def listen():
     conn.close()
     print('Déconnexion')
 
-def write():
-    while True:
-        data = input()
-        if data == "arret":
-            server.close()
-        conn.send(data.encode())
-
 if __name__ == '__main__':
     t1 = threading.Thread(target=listen)
-    t2 = threading.Thread(target=write)
     t1.start()
-    t2.start()
+    data =''
+    while data !='bye':
+        data = input()
+        if data == 'arret':
+            conn.close()
+            server.close()
+            listen()
+        conn.send(data.encode())
+    print('Déconnexion')
     t1.join()
-    t2.join()
-    conn.close()
