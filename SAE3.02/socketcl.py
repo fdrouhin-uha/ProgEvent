@@ -10,6 +10,7 @@ def listen():
         data = client.recv(1024).decode()
         if not data:
             break
+        print(data)
     client.close()
 
 if __name__ == '__main__':
