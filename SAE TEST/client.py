@@ -37,18 +37,13 @@ class Client():
         self.__thread.join()
         self.__sock.close()
 
-    # méthode d'envoi d'un message au travers la socket. Le résultat de cette methode est le message envoyé.
     def __envoi(self):
-        msg = input("client: ")
+        msg = input()
         try:
             self.__sock.send(msg.encode())
         except BrokenPipeError:
-            print("erreur, socket fermée")
+            print("erreur, socket fermé")
         return msg
-
-    """
-      thread recepction, la connection étant passée en argument
-    """
 
     def __reception(self, conn):
         msg = ""
@@ -58,13 +53,11 @@ class Client():
 
 
 if __name__ == "__main__":
+    print(sys.argv)
     if len(sys.argv) < 3:
-        client = Client("127.0.0.1", 15001)
+        client = Client("127.0.0.1", 6824)
     else:
         host = sys.argv[1]
         port = int(sys.argv[2])
-        # création de l'objet client qui est aussi un thread
-        client = Client(host, port)
-        # démarrage de la thread client
-    client.start()
-    client.join()
+    client.connect()
+    client.dialogue()
