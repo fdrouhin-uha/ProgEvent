@@ -2,7 +2,6 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -36,6 +35,7 @@ class MainWindow(QMainWindow):
         quit.clicked.connect(self.actionQuitter)
         ok.clicked.connect(self.convert)
         self.setWindowTitle("Monitoring")
+
 
 
     def convert(self):
