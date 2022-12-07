@@ -1,4 +1,6 @@
 import socket, threading, sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 
 class Client():
@@ -8,25 +10,18 @@ class Client():
         self.__sock = socket.socket()
         self.__thread = None
 
-    # fonction de connection.
     def connect(self) -> int:
         try:
             self.__sock.connect((self.__host, self.__port))
         except ConnectionRefusedError:
-            print("serveur non lancé ou mauvaise information")
+            print("Serveur non lancé ou mauvaises informations")
             return -1
         except ConnectionError:
-            print("erreur de connection")
+            print("Erreur de connexion")
             return -1
         else:
-            print("connexion réalisée")
+            print("Connexion réalisée")
             return 0
-
-    """ 
-        fonction qui gére le dialogue
-        -> lance une thread pour la partie reception 
-        -> lance une boucle pour la partie emission. arréte si kill, reset ou disconnect
-    """
 
     def dialogue(self):
         msg = ""
@@ -47,17 +42,58 @@ class Client():
 
     def __reception(self, conn):
         msg = ""
-        while msg != "kill" and msg != "disconnect" and msg != "reset":
-            msg = conn.recv(1024).decode()
-            print(msg)
+        try:
+            while msg != "kill" and msg != "disconnect" and msg != "reset":
+                msg = conn.recv(1024).decode()
+                print(msg)
+        except:
+            print('Serveur deconnecté !')
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        widget = QWidget()
+        self.setCentralWidget(widget)
+        grid = QGridLayout()
+        widget.setLayout(grid)
+        lab = QLabel("Connexion (IP - PORT)")
+        self.__host = QLineEdit()
+        self.__port = QLineEdit()
+        ok = QPushButton("Connexion")
+        self.__result = QLabel("")
+        quit = QPushButton("Quitter")
+        grid.addWidget(lab, 0, 0)
+        grid.addWidget(self.__host, 0, 1)
+        grid.addWidget(self.__port, 0, 2)
+        grid.addWidget(ok, 0, 3)
+        grid.addWidget(quit, 3, 0)
+        quit.clicked.connect(self.actionQuitter)
+        ok.clicked.connect(self.initcon)
+        self.setWindowTitle("Monitoring")
+
+    def initcon(self):
+        if str(self.__host.text()) == '' or int(self.__port.text()) == '':
+            raise OSError
+        client=Client(str(self.__host.text()), int(self.__port.text()))
+        try:
+            client.connect()
+        except OSError:
+            msg2 = QMessageBox()
+            msg2.setWindowTitle('Erreur')
+            msg2.setText('Serveur déconnecté ou mauvaises données !')
+            msg2.exec_()
+        else:
+            client.dialogue()
+
+
+    def actionQuitter(self):
+        QCoreApplication.exit(0)
 
 if __name__ == "__main__":
-    print(sys.argv)
-    if len(sys.argv) < 3:
-        client = Client("127.0.0.1", 6824)
-    else:
-        host = sys.argv[1]
-        port = int(sys.argv[2])
-    client.connect()
-    client.dialogue()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
+
+
+
