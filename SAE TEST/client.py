@@ -23,17 +23,7 @@ class Client():
             print("Connexion réalisée")
             return 0
 
-    def dialogue(self):
-        msg = ""
-        self.__thread = threading.Thread(target=self.__reception, args=[self.__sock, ])
-        self.__thread.start()
-        while msg != "kill" and msg != "disconnect" and msg != "reset":
-            msg = self.__envoi()
-        self.__thread.join()
-        self.__sock.close()
-
-    def __envoi(self):
-        msg = input()
+    def envoi(self,msg):
         try:
             self.__sock.send(msg.encode())
         except BrokenPipeError:
@@ -59,21 +49,23 @@ class MainWindow(QMainWindow):
         lab = QLabel("Connexion (IP - PORT)")
         self.__host = QLineEdit()
         self.__port = QLineEdit()
+        self.__msgcmd = QLineEdit()
         ok = QPushButton("Connexion")
+        snd = QPushButton('Test')
         self.__result = QLabel("")
         quit = QPushButton("Quitter")
         grid.addWidget(lab, 0, 0)
         grid.addWidget(self.__host, 0, 1)
         grid.addWidget(self.__port, 0, 2)
+        grid.addWidget(snd,1,0)
         grid.addWidget(ok, 0, 3)
         grid.addWidget(quit, 3, 0)
         quit.clicked.connect(self.actionQuitter)
         ok.clicked.connect(self.initcon)
+        snd.clicked.connect(self.sendmsg)
         self.setWindowTitle("Monitoring")
 
     def initcon(self):
-        if str(self.__host.text()) == '' or int(self.__port.text()) == '':
-            raise OSError
         client=Client(str(self.__host.text()), int(self.__port.text()))
         try:
             client.connect()
@@ -82,8 +74,13 @@ class MainWindow(QMainWindow):
             msg2.setWindowTitle('Erreur')
             msg2.setText('Serveur déconnecté ou mauvaises données !')
             msg2.exec_()
-        else:
-            client.dialogue()
+        return client
+
+    def sendmsg(self):
+        cl=self.initcon
+
+
+
 
 
     def actionQuitter(self):

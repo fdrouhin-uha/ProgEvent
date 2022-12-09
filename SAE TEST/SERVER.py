@@ -24,8 +24,9 @@ def serveur():
             else :
                 while msg != "kill" and msg != "reset" and msg != "disconnect":
                     msg = conn.recv(1024).decode()
-                    print ("Received from client: ", msg)
-                    if msg == 'connInfo':
+                    if msg:
+                        print ("Received from client: ", msg)
+                    elif msg == 'connInfo':
                         connInfo(conn)
                     elif msg == 'askOS':
                         askOS(conn)
