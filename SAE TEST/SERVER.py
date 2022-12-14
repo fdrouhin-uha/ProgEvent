@@ -2,52 +2,49 @@ import socket, subprocess, platform
 import psutil as psutil
 
 
-def serveur():
-    msg = ""
-    conn = None
-    server_socket = None
-    while msg != "kill" :
-        msg = ""
-        server_socket = socket.socket()
-        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind(("0.0.0.0", 6824))
-        server_socket.listen(1)
-        print('Serveur en attente de connexion')
-        while msg != "kill" and msg != "reset":
-            msg = ""
-            try :
-                conn, addr = server_socket.accept()
-                print (addr)
-            except ConnectionError:
-                print ("erreur de connexion")
-                break
-            else :
-                while msg != "kill" and msg != "reset" and msg != "disconnect":
-                    msg = conn.recv(1024).decode()
-                    if msg:
-                        print ("Received from client: ", msg)
-                    elif msg == 'connInfo':
-                        connInfo(conn)
-                    elif msg == 'askOS':
-                        askOS(conn)
-                    elif msg == 'askRAM':
-                        askRAM(conn)
-                    elif msg == 'askCPU':
-                        askCPU(conn)
-                    elif msg == 'askIP':
-                        askIP(conn)
-                    elif msg == 'askNAME':
-                        askNAME(conn)
-                    elif msg == 'pythonver':
-                        pythonver(conn)
-                    elif msg[0:4] == 'ping':
-                        msgl = msg.split(' ')
-                        host = msgl[1]
-                        ping(host,conn)
+def data(server_socket,conn):
+    while True:
+        try:
+         msg = conn.recv(1024).decode()
+        except OSError:
+            return ('Socket non connecté')
+        else:
+            if msg =='disconnect':
+                conn.send(msg.encode())
+                print('Deconnexion du socket')
                 conn.close()
-        print ("Connection closed")
-        server_socket.close()
-        print ("Server closed")
+            else:
+                print("Client : ",msg)
+            if msg == 'kill':
+                conn.send(msg.encode())
+                print('Fermeture du serveur')
+                conn.close()
+                server_socket.close()
+            elif msg == 'reset':
+                conn.send(msg.encode())
+                conn.close()
+                server_socket.close()
+                print('Reset du serveur')
+                connect()
+            else:
+                if msg == 'connInfo':
+                    connInfo(conn)
+                elif msg == 'askOS':
+                    askOS(conn)
+                elif msg == 'askRAM':
+                    askRAM(conn)
+                elif msg == 'askCPU':
+                    askCPU(conn)
+                elif msg == 'askIP':
+                    askIP(conn)
+                elif msg == 'askNAME':
+                    askNAME(conn)
+                elif msg == 'pythonver':
+                    pythonver(conn)
+                elif msg[0:4] == 'ping':
+                    msgl = msg.split(' ')
+                    host = msgl[1]
+                    ping(host,conn)
 
 def connInfo(conn):
     info = 'Machine : ' + socket.gethostname() + ' | IP : ' + socket.gethostbyname(socket.gethostname())
@@ -61,11 +58,14 @@ def askOS(conn):
         conn.send(p.encode())
     conn.send(p.encode())
     conn.send(p2.encode())
+
 def askRAM(conn):
     ram = psutil.virtual_memory().percent
     ram2 = psutil.virtual_memory().available * 100 / psutil.virtual_memory().total
     ram3 = psutil.virtual_memory().total / 1000000000
+    print(ram + ram2 + ram3)
     conn.send(f'RAM totale : {round(ram3, 1)} Go | RAM utilisée {ram} % | RAM restante : {round(ram2, 1)} %'.encode())
+
 
 def askCPU(conn):
     conn.send(f'Utilisation du CPU : {psutil.cpu_percent()} %'.encode())
@@ -78,5 +78,12 @@ def pythonver(conn):
 def ping(host, conn):
     conn.send(subprocess.getoutput('ping ' + host).encode())
 
+def connect():
+    server_socket = socket.socket()
+    server_socket.bind(('127.0.0.1', 6824))
+    server_socket.listen(1)
+    conn, address = server_socket.accept()
+    data(server_socket,conn)
+
 if __name__ == '__main__':
-    serveur()
+    connect()

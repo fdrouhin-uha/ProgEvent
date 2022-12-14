@@ -1,10 +1,14 @@
 import socket, threading, sys
+
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 y = []
 ip = open("fich.txt", "r")
 for x in ip:
   y.append(str(x).replace("\n", ""))
+lstcmd = ['connInfo','askOS', 'askRAM', 'askCPU', 'askIP', 'askNAME', 'pythonver', 'ping']
+
 
 class Client():
     def __init__(self, host, port):
@@ -32,7 +36,7 @@ class Client():
     def envoi(self,msg):
         self.__sock.send(msg.encode())
 
-    def __reception(self, conn):
+    def reception(self, conn):
         msg = ""
         try:
             while msg != "kill" and msg != "disconnect" and msg != "reset":
@@ -50,30 +54,61 @@ class MainWindow(QMainWindow):
         widget.setLayout(grid)
         lab = QLabel("Connexion (IP - PORT)")
         lab2 = QLabel("Liste des machines : ")
+        self.conn=Client('127.0.0.1',6824)
         self.__host = QLineEdit()
         self.__port = QLineEdit("6824")
-        self.__msgcmd = QLineEdit()
-        ok = QPushButton("Connexion")
-        snd = QPushButton('Test')
+        self.__logs = QTextEdit()
+        self.__logs.setReadOnly(True)
+        self.__lstcmd = QComboBox()
+        self.__ok = QPushButton("Connexion")
+        self.__status = QLabel("Statut : Déconnecté")
+        snd = QPushButton('Send command')
         self.__select = QComboBox()
-        self.__select.addItem(y[0])
-        self.__select.addItem(y[1])
-        self.__select.addItem(y[2])
-        self.__result = QLabel("")
+        for j in y:
+            self.__select.addItem(j)
         quit = QPushButton("Quitter")
         grid.addWidget(lab2,0, 0)
         grid.addWidget(lab, 1, 0)
+        grid.addWidget(self.__status,0,2)
         grid.addWidget(self.__host, 1, 1)
         grid.addWidget(self.__port, 1, 2)
         grid.addWidget(self.__select, 0, 1)
-        grid.addWidget(ok, 1, 3)
+        grid.addWidget(self.__ok, 1, 3)
+        grid.addWidget(self.__logs,2, 1)
+        grid.addWidget(self.__lstcmd,2 ,0)
+        grid.addWidget(snd,2,2)
+        for x in lstcmd:
+            self.__lstcmd.addItem(x)
         grid.addWidget(quit, 4, 0)
         self.combobox()
-        quit.clicked.connect(self.actionQuitter)
-        ok.clicked.connect(self.initcon)
+        quit.clicked.connect(self.closeEvent)
+        self.__ok.clicked.connect(self.initcon)
         self.__select.activated.connect(self.combobox)
+        snd.clicked.connect(self.sndmsg)
         self.setWindowTitle("Monitoring")
 
+
+
+    def initcon(self):
+        self.conn=Client(str(self.__host.text()), int(self.__port.text()))
+        try:
+            self.conn.connect()
+        except:
+            msg2 = QMessageBox()
+            msg2.setWindowTitle('Erreur')
+            msg2.setText('Erreur de connexion')
+            msg2.exec_()
+        else:
+            self.__status.setText('Statut : Connecté')
+
+    def sndmsg(self):
+        if self.__status.text()=='Statut : Connecté':
+            cmd = self.__lstcmd.currentText()
+            try:
+                self.__logs.append(cmd)
+                self.conn.envoi(cmd)
+            except:
+                pass
 
     def combobox(self):
         if self.__select.currentText() == y[0]:
@@ -83,21 +118,19 @@ class MainWindow(QMainWindow):
         else:
             self.__host.setText(y[2])
 
+    def closeEvent(self, _e: QCloseEvent):
+        box = QMessageBox()
+        box.setWindowTitle("Quitter ?")
+        box.setText("Voulez vous quitter ?")
+        box.addButton(QMessageBox.Yes)
+        box.addButton(QMessageBox.No)
 
-    def initcon(self):
-        client=Client(str(self.__host.text()), int(self.__port.text()))
-        try:
-            client.connect()
-        except:
-            msg2 = QMessageBox()
-            msg2.setWindowTitle('Erreur')
-            msg2.setText('Erreur de connexion')
-            msg2.exec_()
+        ret = box.exec()
 
-
-
-    def actionQuitter(self):
-        QCoreApplication.exit(0)
+        if ret == QMessageBox.Yes:
+            QCoreApplication.exit(0)
+        else:
+            _e.ignore()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
