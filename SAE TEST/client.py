@@ -7,7 +7,7 @@ y = []
 ip = open("fich.txt", "r")
 for x in ip:
   y.append(str(x).replace("\n", ""))
-lstcmd = ['connInfo','askOS', 'askRAM', 'askCPU', 'askIP', 'askNAME', 'pythonver', 'ping']
+lstcmd = ['connInfo','askOS', 'askRAM', 'askCPU', 'askIP', 'askNAME', 'pythonver', 'ping', 'kill', 'reset']
 
 
 class Client():
@@ -35,6 +35,8 @@ class Client():
 
     def envoi(self,msg):
         self.__sock.send(msg.encode())
+        rep = self.__sock.recv(1024).decode()
+        return rep
 
     def reception(self, conn):
         msg = ""
@@ -107,6 +109,7 @@ class MainWindow(QMainWindow):
             try:
                 self.__logs.append(cmd)
                 self.conn.envoi(cmd)
+                self.__logs.append(self.conn.envoi(cmd))
             except:
                 pass
 
