@@ -2,7 +2,7 @@ import socket, subprocess, platform
 import psutil as psutil
 
 
-def data(server_socket,conn):
+def srv(server_socket,conn):
     while True:
         try:
          msg = conn.recv(1024).decode()
@@ -51,39 +51,40 @@ def connInfo(conn):
     conn.send(info.encode())
 
 def askOS(conn):
-    p = subprocess.getoutput('systeminfo | findstr /B /C:"Nom du système d’exploitation:"')
-    p2 = subprocess.getoutput('systeminfo | findstr /B /C:"Version du syst"')
-    if p == '':
-        p = subprocess.getoutput('systeminfo | findstr /B /C:"OS Name : "')
-        conn.send(p.encode())
-    conn.send(p.encode())
-    conn.send(p2.encode())
+    os_name = platform.system()
+    os_version = platform.release()
+    os_info = f'Nom du système d’exploitation : {os_name}\nVersion du système d’exploitation : {os_version}'
+    conn.send(os_info.encode())
 
 def askRAM(conn):
-    ram = psutil.virtual_memory().percent
-    ram2 = psutil.virtual_memory().available * 100 / psutil.virtual_memory().total
-    ram3 = psutil.virtual_memory().total / 1000000000
-    print(ram + ram2 + ram3)
-    conn.send(f'RAM totale : {round(ram3, 1)} Go | RAM utilisée {ram} % | RAM restante : {round(ram2, 1)} %'.encode())
-
+    ram_used = psutil.virtual_memory().percent
+    ram_available = psutil.virtual_memory().available
+    ram_total = psutil.virtual_memory().total
+    ram_used_str = f'{ram_used} %'
+    ram_available_str = f'{round(ram_available / 1000000000, 1)} Go'
+    ram_total_str = f'{round(ram_total / 1000000000, 1)} Go'
+    conn.send(f'RAM totale : {ram_total_str} | RAM utilisée {ram_used_str} | RAM restante : {ram_available_str}'.encode())
 
 def askCPU(conn):
     conn.send(f'Utilisation du CPU : {psutil.cpu_percent()} %'.encode())
+
 def askIP(conn):
-    conn.send(subprocess.getoutput('ipconfig | findstr /i "Adresse IPv4"').encode())
+    ip_address = socket.gethostbyname(socket.gethostname())
+    ip_address_str = f'Adresse IP : {ip_address}'
+    conn.send(ip_address_str.encode())
 def askNAME(conn):
     conn.send(f'Nom de la machine : {socket.gethostname()}'.encode())
 def pythonver(conn):
-    conn.send(subprocess.getoutput('python --version').encode())
+    conn.send(subprocess.check_output('python --version', shell=True).decode('cp850').strip().encode())
 def ping(host, conn):
-    conn.send(subprocess.getoutput('ping ' + host).encode())
+    conn.send(subprocess.check_output('ping ' + host, shell=True).decode('cp850').strip().encode())
 
 def connect():
     server_socket = socket.socket()
     server_socket.bind(('127.0.0.1', 6824))
     server_socket.listen(1)
     conn, address = server_socket.accept()
-    data(server_socket,conn)
+    srv(server_socket,conn)
 
 if __name__ == '__main__':
     connect()
