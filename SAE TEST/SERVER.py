@@ -1,11 +1,12 @@
+import os
 import socket, subprocess, platform
 import psutil as psutil
-
+OS = platform.system()
 
 def srv(server_socket,conn):
     while True:
         try:
-         msg = conn.recv(1024).decode()
+            msg = conn.recv(1024).decode()
         except OSError:
             return ('Socket non connecté')
         else:
@@ -13,6 +14,7 @@ def srv(server_socket,conn):
                 conn.send(msg.encode())
                 print('Deconnexion du socket')
                 conn.close()
+                conn, address = server_socket.accept()
             else:
                 print("Client : ",msg)
             if msg == 'kill':
@@ -41,11 +43,46 @@ def srv(server_socket,conn):
                     askNAME(conn)
                 elif msg == 'pythonver':
                     pythonver(conn)
-                elif msg[0:4] == 'ping':
+                elif msg.startswith('ping'):
                     msgl = msg.split(' ')
                     host = msgl[1]
-                    ping(host,conn)
-
+                    try:
+                        ping(host,conn)
+                    except:
+                        conn.send('Ping échoué !'.encode())
+                elif msg.startswith('DOS:'):
+                    if OS == 'DOS':
+                        try:
+                            msgl = msg.split(':')
+                            cmd = msgl[1]
+                            dos(conn,cmd)
+                        except:
+                            conn.send('Commande inconnue ou incorrecte'.encode())
+                    else:
+                        conn.send('L\'OS n\'est pas compatible avec la commande envoyée !'.encode())
+                elif msg.startswith('Linux:'):
+                    if OS == 'Linux':
+                        try:
+                            msgl = msg.split(':')
+                            cmd = msgl[1]
+                            linux(conn,cmd)
+                        except:
+                            conn.send('Commande inconnue ou incorrecte'.encode())
+                    else:
+                        conn.send('L\'OS n\'est pas compatible avec la commande envoyée !'.encode())
+                elif msg.startswith('Powershell:'):
+                    if OS == 'Windows':
+                        try:
+                            msgl = msg.split(':')
+                            cmd = msgl[1]
+                            print(cmd)
+                            powershell(conn, cmd)
+                        except:
+                            conn.send('Commande inconnue ou incorrecte'.encode())
+                    else:
+                        conn.send('L\'OS n\'est pas compatible avec la commande envoyée !'.encode())
+                else:
+                    conn.send('Commande non reconnue'.encode())
 def connInfo(conn):
     info = 'Machine : ' + socket.gethostname() + ' | IP : ' + socket.gethostbyname(socket.gethostname())
     conn.send(info.encode())
@@ -78,6 +115,18 @@ def pythonver(conn):
     conn.send(subprocess.check_output('python --version', shell=True).decode('cp850').strip().encode())
 def ping(host, conn):
     conn.send(subprocess.check_output('ping ' + host, shell=True).decode('cp850').strip().encode())
+
+def dos(conn, cmd):
+    result = os.system(cmd)
+    conn.send(result)
+
+def linux(conn,cmd):
+    output = os.popen(cmd).read()
+    conn.send(output)
+
+def powershell(conn,cmd):
+    completed = subprocess.run(["powershell", "-Command", cmd], capture_output=True)
+    conn.send(completed.stdout)
 
 def connect():
     server_socket = socket.socket()
