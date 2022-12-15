@@ -1,7 +1,5 @@
-import pathlib
-import socket, threading, sys, re
-
-from PyQt5.QtGui import QCloseEvent, QIcon
+import pathlib, socket, threading, sys, re, qdarkstyle
+from PyQt5.QtGui import QCloseEvent, QIcon, QPalette, QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
@@ -39,10 +37,11 @@ class Client():
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.resize(800,400)
+        self.resize(1200,400)
         widget = QWidget()
         self.setCentralWidget(widget)
         grid = QGridLayout()
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         widget.setLayout(grid)
         lab = QLabel("Connexion (IP - PORT)")
         lab2 = QLabel("Liste des machines : ")
@@ -59,16 +58,17 @@ class MainWindow(QMainWindow):
         self.__lstcmd.setEnabled(False)
         self.__ok = QPushButton("Connexion")
         self.__status = QLabel("Statut : Déconnecté")
-        self.__status.setStyleSheet('color:red;' "border :5px solid ;"
-                             "border-top-color : red; "
-                             "border-left-color :red;"
-                             "border-right-color :red;"
-                             "border-bottom-color : red")
+        self.__status.setStyleSheet('color:red;' "border :2px solid;"
+                                    "border-top-color : red;"
+                                    "border-left-color :red;"
+                                    "border-right-color :red;"
+                                    "border-bottom-color : red;"
+                                    "border-radius: 10px;")
         self.__status.setAlignment(Qt.AlignCenter)
         self.__snd = QPushButton('Envoi commande')
         self.__snd.setEnabled(False)
         self.__open = QPushButton('Ouvrir')
-        self.__open.setStyleSheet("border :5px solid ;"
+        self.__open.setStyleSheet("border :2px solid ;"
                              "border-top-color : green;"
                              "border-left-color :green;"
                              "border-right-color :green;"
@@ -138,11 +138,12 @@ class MainWindow(QMainWindow):
                 msg2.exec_()
             else:
                 self.__status.setText('Statut : Connecté')
-                self.__status.setStyleSheet('color: green;' "border :5px solid ;"
-                                 "border-top-color : lightgreen; "
-                                 "border-left-color :lightgreen;"
-                                 "border-right-color :lightgreen;"
-                                 "border-bottom-color : lightgreen")
+                self.__status.setStyleSheet('color: green;' "border :2px solid;"
+                                            "border-top-color : lightgreen;"
+                                            "border-left-color :lightgreen;"
+                                            "border-right-color :lightgreen;"
+                                            "border-bottom-color : lightgreen;"
+                                            "border-radius: 10px;")
                 self.__lstcmd.setEnabled(True)
                 self.__snd.setEnabled(True)
                 self.__cmdman.setEnabled(True)
@@ -154,11 +155,12 @@ class MainWindow(QMainWindow):
             self.__snd.setEnabled(False)
             self.__cmdman.setEnabled(False)
             self.__status.setText('Statut : Déconnecté')
-            self.__status.setStyleSheet('color:red;' "border :5px solid ;"
-                                        "border-top-color : red; "
+            self.__status.setStyleSheet('color:red;' "border :2px solid;"
+                                        "border-top-color : red;"
                                         "border-left-color :red;"
                                         "border-right-color :red;"
-                                        "border-bottom-color : red")
+                                        "border-bottom-color : red;"
+                                        "border-radius: 10px;")
     def lstip(self):
         filename = QFileDialog.getOpenFileName()
         path = filename[0]
@@ -231,11 +233,12 @@ class MainWindow(QMainWindow):
                     self.__snd.setEnabled(False)
                     self.__cmdman.setEnabled(False)
                     self.__status.setText('Statut : Déconnecté')
-                    self.__status.setStyleSheet('color:red;' "border :5px solid ;"
-                                                "border-top-color : red; "
+                    self.__status.setStyleSheet('color:red;' "border :2px solid;"
+                                                "border-top-color : red;"
                                                 "border-left-color :red;"
                                                 "border-right-color :red;"
-                                                "border-bottom-color : red")
+                                                "border-bottom-color : red;"
+                                                "border-radius: 10px;")
             except:
                 msg2 = QMessageBox()
                 msg2.setWindowTitle('Erreur')
