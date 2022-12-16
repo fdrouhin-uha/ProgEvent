@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.__host = QLineEdit()
         self.__port = QLineEdit("6824")
         self.__logs = QTextEdit()
+        self.__path = QLabel()
         self.__cmdman = QLineEdit()
         self.__logscmd = QTextEdit()
         self.__logscmd.setFixedSize(150,300)
@@ -165,6 +166,7 @@ class MainWindow(QMainWindow):
     def lstip(self):
         filename = QFileDialog.getOpenFileName()
         path = filename[0]
+        self.__path.setText(path)
         last = pathlib.PurePath(path).name
         self.__select.clear()
         if path:
@@ -275,6 +277,9 @@ class MainWindow(QMainWindow):
             if ok:
                 if self.is_valid_ip(text):
                     self.__select.insertItem(self.__select.count() -1 ,text)
+                    path = self.__path.text()
+                    with open(path, 'a') as f:
+                        f.write("\n" + text)
                 else:
                     msg2 = QMessageBox()
                     msg2.setWindowTitle('Erreur')
