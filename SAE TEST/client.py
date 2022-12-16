@@ -3,9 +3,7 @@ import qdarkstyle
 from PyQt5.QtGui import QCloseEvent, QIcon, QPalette, QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
 lstcmd = ['connInfo','askOS', 'askRAM', 'askCPU', 'askIP', 'askNAME', 'pythonver', 'ping', 'kill', 'reset', 'Commande personnalisée']
-
 
 class Client():
     def __init__(self, host, port):
@@ -34,7 +32,6 @@ class Client():
         self.__sock.send(msg.encode())
         rep = self.__sock.recv(8192).decode()
         return rep
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
