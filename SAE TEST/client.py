@@ -1,4 +1,5 @@
-import pathlib, socket, threading, sys, re, qdarkstyle
+import pathlib, socket, threading, sys, re
+import qdarkstyle
 from PyQt5.QtGui import QCloseEvent, QIcon, QPalette, QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
