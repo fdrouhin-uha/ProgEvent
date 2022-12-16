@@ -27,7 +27,6 @@ class Client():
         else:
             print("Connexion réalisée")
             return 0
-
     def envoi(self,msg):
         self.__sock.send(msg.encode())
         rep = self.__sock.recv(8192).decode()
