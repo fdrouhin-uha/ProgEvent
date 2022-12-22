@@ -50,7 +50,7 @@ def srv(server_socket,conn):
                         ping(host,conn)
                     except:
                         conn.send('Ping échoué !'.encode())
-                elif msg.startswith('DOS:'):
+                elif msg.lower().startswith('DOS:'):
                     if OS == 'DOS':
                         try:
                             msgl = msg.split(':')
@@ -60,7 +60,7 @@ def srv(server_socket,conn):
                             conn.send('Commande inconnue ou incorrecte'.encode())
                     else:
                         conn.send('L\'OS n\'est pas compatible avec la commande envoyée !'.encode())
-                elif msg.startswith('Linux:'):
+                elif msg.lower().startswith('Linux:'):
                     if OS == 'Linux':
                         try:
                             msgl = msg.split(':')
@@ -70,7 +70,7 @@ def srv(server_socket,conn):
                             conn.send('Commande inconnue ou incorrecte'.encode())
                     else:
                         conn.send('L\'OS n\'est pas compatible avec la commande envoyée !'.encode())
-                elif msg.startswith('Powershell:'):
+                elif msg.lower().startswith('Powershell:'):
                     if OS == 'Windows':
                         try:
                             msgl = msg.split(':')
